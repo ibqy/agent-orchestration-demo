@@ -31,6 +31,17 @@ public class ConcurrencyLimiter {
     }
 
     public void release(String userId) {
-        redis.opsForValue().decrement(KEY.formatted(userId));
+        String key = KEY.formatted(userId);
+        String currentStr = redis.opsForValue().get(key);
+        if (currentStr != null) {
+            try {
+                long current = Long.parseLong(currentStr);
+                if (current > 0) {
+                    redis.opsForValue().decrement(key);
+                }
+            } catch (NumberFormatException e) {
+                redis.delete(key);
+            }
+        }
     }
 }

@@ -11,18 +11,24 @@ public final class ActionParser {
     private ActionParser() {}
 
     public static AgentAction parse(String llmOutput) {
-        String thought = extractAfter(llmOutput, "THOUGHT:", "ACTION:");
-        String actionJson = extractJsonAfter(llmOutput, "ACTION:");
-        String answer = extractAfter(llmOutput, "ANSWER:", null);
+        boolean hasAnswer = llmOutput.contains("ANSWER:");
+        boolean hasAction = llmOutput.contains("ACTION:");
 
-        if (answer != null) {
+        String thoughtBoundary = hasAction ? "ACTION:" : (hasAnswer ? "ANSWER:" : null);
+        String thought = extractAfter(llmOutput, "THOUGHT:", thoughtBoundary);
+
+        if (hasAnswer) {
+            String answer = extractAfter(llmOutput, "ANSWER:", null);
             return AgentAction.ofAnswer(thought, answer.trim());
         }
-        if (actionJson != null) {
-            String tool = extractField(actionJson, "tool");
-            String args = extractField(actionJson, "args");
-            if (tool != null) {
-                return AgentAction.ofTool(thought, tool, args == null ? "{}" : args);
+        if (hasAction) {
+            String actionJson = extractJsonAfter(llmOutput, "ACTION:");
+            if (actionJson != null) {
+                String tool = extractField(actionJson, "tool");
+                String args = extractField(actionJson, "args");
+                if (tool != null) {
+                    return AgentAction.ofTool(thought, tool, args == null ? "{}" : args);
+                }
             }
         }
         return AgentAction.ofRetry(thought);

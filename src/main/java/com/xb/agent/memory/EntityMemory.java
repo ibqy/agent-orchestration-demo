@@ -29,10 +29,13 @@ public class EntityMemory {
     /** 注入 SystemPrompt 的实体块 */
     public String buildPromptBlock(String userId) {
         if (entities.isEmpty()) return "";
-        StringBuilder sb = new StringBuilder("已知用户关键实体:\n");
+        StringBuilder sb = new StringBuilder();
         entities.forEach((type, users) -> {
             String v = users.get(userId);
-            if (v != null) sb.append("- ").append(type).append(": ").append(v).append('\n');
+            if (v != null) {
+                if (sb.isEmpty()) sb.append("已知用户关键实体:\n");
+                sb.append("- ").append(type).append(": ").append(v).append('\n');
+            }
         });
         return sb.toString();
     }

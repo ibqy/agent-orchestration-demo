@@ -21,9 +21,11 @@ public class DemoTools implements SmartInitializingSingleton {
     private static final Logger log = LoggerFactory.getLogger(DemoTools.class);
 
     private final ToolRegistry registry;
+    private final ToolPermission permission;
 
-    public DemoTools(ToolRegistry registry) {
+    public DemoTools(ToolRegistry registry, ToolPermission permission) {
         this.registry = registry;
+        this.permission = permission;
     }
 
     @Override
@@ -32,6 +34,11 @@ public class DemoTools implements SmartInitializingSingleton {
         registry.register(orderDeleteTool());
         registry.register(flakyTool());
         log.info("[DemoTools] 3 个示例工具已注册");
+
+        // 教学演示：为默认用户授予所有工具权限，生产环境应从权限系统加载
+        permission.grant("default", "order:read", "order:write", "api:call");
+        permission.grant("demo", "order:read", "order:write", "api:call");
+        log.info("[DemoTools] 已为 default/demo 用户授予演示权限");
     }
 
     /** 查询工具: 只读，LOW 风险 */

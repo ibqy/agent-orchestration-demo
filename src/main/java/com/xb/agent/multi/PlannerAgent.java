@@ -42,7 +42,7 @@ public class PlannerAgent {
         String output = model.chat(PLAN_PROMPT.formatted(userGoal));
         log.info("[Planner] 原始规划输出:\n{}", output);
 
-        for (String line : output.lines()) {
+        for (String line : output.lines().toList()) {
             String[] parts = line.split("\\|");
             if (parts.length < 2) continue;
 

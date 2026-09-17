@@ -63,11 +63,44 @@ curl localhost:8081/agent/metrics
 
 ## 测试
 
-不依赖外部服务的核心逻辑测试（解析容错/依赖调度/动态注册）：
+不依赖外部服务的核心逻辑测试（30 个测试覆盖 Guard/Memory/Tool/Parser）：
 
 ```bash
-mvn test -Dtest=AgentCoreTest
+mvn test
 ```
+
+测试覆盖：
+- **ActionParser**: 容错解析（工具调用/最终答案/格式错误）
+- **TaskPlan**: 依赖调度（子任务拓扑排序）
+- **ToolRegistry**: 动态注册/下线
+- **Guard**: 并发限制、循环熔断、Token 预算
+- **Memory**: 实体记忆用户隔离、记忆压缩阈值
+- **ToolExecutor**: 权限校验、错误分类反馈
+
+## 实现边界
+
+**已实现（可运行）：**
+- ✅ 三种推理模式（ReAct / Plan-and-Solve / Self-Reflection）
+- ✅ 多 Agent 编排（Planner/Worker/Reviewer 三角色）
+- ✅ 状态机 + 快照持久化（Redis 存储，支持断点续跑）
+- ✅ 分层记忆（短时/长时/实体三层）
+- ✅ 工具注册中心 + 权限校验 + 熔断降级
+- ✅ 防护机制（并发限制/循环熔断/Token 预算）
+- ✅ OpenTelemetry 可观测（Span + Metrics）
+- ✅ REST API + 全链路串联
+- ✅ 30 个单元测试
+
+**教学简化（生产需补充）：**
+- ⚠️ 工具示例为模拟数据（DemoTools），生产需对接真实 API
+- ⚠️ 权限硬编码在 DemoTools，生产需对接权限系统（如 Spring Security）
+- ⚠️ LLM 使用 OpenAI 兼容接口，生产可按需切换（配置 `llm.provider`）
+- ⚠️ Milvus/Kafka 仅配置未使用，生产用于向量检索/事件驱动
+
+**未实现（学习路线扩展）：**
+- ❌ 分布式锁（多 Pod 部署时 HITL 审批需分布式锁）
+- ❌ 工具版本管理（工具签名变更时旧任务回放会失败）
+- ❌ 记忆压缩的评估指标（压缩后信息损失度量）
+- ❌ 前端可视化（任务进度/审批界面）
 
 ## 提交历史（学习路线）
 
