@@ -63,7 +63,7 @@ curl localhost:8081/agent/metrics
 
 ## 测试
 
-不依赖外部服务的核心逻辑测试（30 个测试覆盖 Guard/Memory/Tool/Parser）：
+不依赖外部服务的核心逻辑测试（35 个测试覆盖 Guard/Memory/Tool/Parser/Common）：
 
 ```bash
 mvn test
@@ -76,6 +76,7 @@ mvn test
 - **Guard**: 并发限制、循环熔断、Token 预算
 - **Memory**: 实体记忆用户隔离、记忆压缩阈值
 - **ToolExecutor**: 权限校验、错误分类反馈
+- **GlobalExceptionHandler**: 统一响应封装、ResponseStatusException/参数异常/未知异常处理
 
 ## 实现边界
 
@@ -88,7 +89,7 @@ mvn test
 - ✅ 防护机制（并发限制/循环熔断/Token 预算）
 - ✅ OpenTelemetry 可观测（Span + Metrics）
 - ✅ REST API + 全链路串联
-- ✅ 30 个单元测试
+- ✅ 35 个单元测试
 
 **教学简化（生产需补充）：**
 - ⚠️ 工具示例为模拟数据（DemoTools），生产需对接真实 API
@@ -113,3 +114,4 @@ mvn test
 7. 防护熔断 + 可观测
 8. REST 入口 + 全链路编排 + 测试
 9. 学习总结文档
+10. 全局异常处理 + 统一响应封装（ApiResponse + GlobalExceptionHandler）
