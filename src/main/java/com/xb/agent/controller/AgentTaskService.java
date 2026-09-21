@@ -10,6 +10,7 @@ import com.xb.agent.observe.AgentMetrics;
 import com.xb.agent.observe.AgentTraceLogger;
 import com.xb.agent.reasoning.ToolInvoker;
 import com.xb.agent.state.AgentEvent;
+import com.xb.agent.state.AgentState;
 import com.xb.agent.state.SnapshotStore;
 import com.xb.agent.state.TaskRunner;
 import com.xb.agent.state.TaskSnapshot;
@@ -162,9 +163,16 @@ public class AgentTaskService {
         };
     }
 
-    /** 人工确认: WAIT_HUMAN → RUNNING */
+    /**
+     * 人工确认: WAIT_HUMAN → RUNNING，并通过 resume 恢复执行
+     *
+     * TODO: 真正恢复执行需要在此处将任务重新提交给 orchestrator（如通过
+     *       ApplicationEventPublisher 发布 ResumeEvent，由监听器异步重新编排）。
+     *       当前架构中 submitTask() 是同步的，无法从中间断点重新注入执行流。
+     */
     public boolean confirm(String taskId) {
-        return taskRunner.fireEvent(taskId, AgentEvent.HUMAN_CONFIRM);
+        AgentState resumed = taskRunner.resume(taskId);
+        return resumed == AgentState.RUNNING;
     }
 
     /** 人工终止: WAIT_HUMAN → FAILED */

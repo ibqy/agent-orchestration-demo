@@ -27,7 +27,11 @@ public class ConcurrencyLimiter {
         String key = KEY.formatted(userId);
         Long current = redis.opsForValue().increment(key);
         redis.expire(key, Duration.ofMinutes(10));
-        return current != null && current <= max;
+        if (current != null && current <= max) {
+            return true;
+        }
+        redis.opsForValue().decrement(key);
+        return false;
     }
 
     public void release(String userId) {

@@ -52,14 +52,16 @@ class GuardTest {
         when(valueOps.increment(key)).thenReturn(3L);
         assertTrue(limiter.tryAcquire(userId, 3));
 
-        // 第四次获取，计数器 = 4，超过限制
+        // 第四次获取，计数器 = 4，超过限制 → 应立即 decrement 归还槽位
         when(valueOps.increment(key)).thenReturn(4L);
         assertFalse(limiter.tryAcquire(userId, 3));
+        verify(valueOps, times(1)).decrement(key); // tryAcquire 拒绝时回滚
 
-        // 释放后计数器减 1
-        when(valueOps.get(key)).thenReturn("4");
+        // 重置 mock 计数，验证 release 独立调用 decrement
+        clearInvocations(valueOps);
+        when(valueOps.get(key)).thenReturn("3");
         limiter.release(userId);
-        verify(valueOps).decrement(key);
+        verify(valueOps, times(1)).decrement(key);
     }
 
     @Test

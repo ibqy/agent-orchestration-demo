@@ -57,11 +57,31 @@ public class TaskRunner {
         };
     }
 
-    /** 断点续跑: 读快照，返回当前状态 */
+    /**
+     * 断点续跑: 读快照 → 恢复状态 → 重新提交执行
+     *
+     * 局限: 真正的续跑需要将任务重新提交给 MultiAgentOrchestrator 执行，
+     * 但 TaskRunner 不持有 orchestrator 引用（避免循环依赖）。
+     * 因此这里只能做到: 加载快照 → 流转到 RUNNING → 由调用方（AgentTaskService）
+     * 负责重新编排执行。生产环境可注入 ApplicationEventPublisher 发事件解耦。
+     */
     public AgentState resume(String taskId) {
         TaskSnapshot snapshot = snapshotStore.load(taskId);
         if (snapshot == null) return null;
-        log.info("[TaskRunner] 恢复任务 {} 从状态 {}", taskId, snapshot.getState());
-        return snapshot.getState();
+
+        AgentState state = snapshot.getState();
+        log.info("[TaskRunner] 恢复任务 {} 从状态 {}", taskId, state);
+
+        // 如果任务处于等待人工确认状态，自动流转到 RUNNING
+        if (state == AgentState.WAIT_HUMAN) {
+            boolean ok = fireEvent(taskId, AgentEvent.HUMAN_CONFIRM);
+            if (ok) {
+                log.info("[TaskRunner] 任务 {} 已从 WAIT_HUMAN 恢复到 RUNNING", taskId);
+                return AgentState.RUNNING;
+            }
+            log.warn("[TaskRunner] 任务 {} 状态流转失败", taskId);
+        }
+
+        return state;
     }
 }
