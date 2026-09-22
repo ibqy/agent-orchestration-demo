@@ -1,15 +1,19 @@
 package com.xb.agent.controller;
 
+import com.xb.agent.a2a.A2aIntegrationService;
 import com.xb.agent.memory.EntityMemory;
+import com.xb.agent.mcp.McpIntegrationService;
 import com.xb.agent.observe.AgentMetrics;
 import com.xb.agent.tool.ToolRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -34,13 +38,19 @@ public class AgentController {
     private final ToolRegistry toolRegistry;
     private final AgentMetrics metrics;
     private final EntityMemory entityMemory;
+    private final McpIntegrationService mcpService;
+    private final A2aIntegrationService a2aService;
 
     public AgentController(AgentTaskService taskService, ToolRegistry toolRegistry,
-                           AgentMetrics metrics, EntityMemory entityMemory) {
+                           AgentMetrics metrics, EntityMemory entityMemory,
+                           @Autowired(required = false) McpIntegrationService mcpService,
+                           @Autowired(required = false) A2aIntegrationService a2aService) {
         this.taskService = taskService;
         this.toolRegistry = toolRegistry;
         this.metrics = metrics;
         this.entityMemory = entityMemory;
+        this.mcpService = mcpService;
+        this.a2aService = a2aService;
     }
 
     /**
@@ -159,5 +169,54 @@ public class AgentController {
         if (start < 3) return "unknown";
         int end = result.indexOf(" ", start);
         return end > start ? result.substring(start, end) : result.substring(start);
+    }
+
+    // ==================== MCP / A2A 端点 ====================
+
+    /**
+     * GET /agent/mcp/status —— MCP 连接状态
+     */
+    @GetMapping("/mcp/status")
+    public Mono<Map<String, Object>> mcpStatus() {
+        if (mcpService != null) {
+            return Mono.just(mcpService.getStatus());
+        }
+        return Mono.just(Map.of("connected", false, "hint", "MCP 未启用（MCP_ENABLED=false）"));
+    }
+
+    /**
+     * GET /agent/a2a/status —— A2A 服务状态
+     */
+    @GetMapping("/a2a/status")
+    public Mono<Map<String, Object>> a2aStatus() {
+        if (a2aService != null) {
+            return Mono.just(a2aService.getStatus());
+        }
+        return Mono.just(Map.of("initialized", false, "hint", "A2A 未启用（A2A_ENABLED=false）"));
+    }
+
+    /**
+     * GET /agent/a2a/card —— 本地 Agent 的 A2A 名片
+     */
+    @GetMapping("/a2a/card")
+    public Mono<Map<String, Object>> a2aCard() {
+        if (a2aService != null) {
+            return Mono.just(a2aService.getAgentCard());
+        }
+        return Mono.just(Map.of("error", "A2A 未启用"));
+    }
+
+    /**
+     * GET /agent/a2a/call?remoteUrl=...&message=... —— 调用远程 Agent（模拟）
+     */
+    @GetMapping("/a2a/call")
+    public Mono<Map<String, Object>> a2aCall(
+            @RequestParam(defaultValue = "http://localhost:8082/a2a/") String remoteUrl,
+            @RequestParam(defaultValue = "你好，请介绍你的能力") String message) {
+        if (a2aService != null) {
+            String response = a2aService.callRemoteAgent(remoteUrl, message);
+            return Mono.just(Map.of("remoteAgent", remoteUrl, "message", message, "response", response));
+        }
+        return Mono.just(Map.of("error", "A2A 未启用（A2A_ENABLED=false）"));
     }
 }
