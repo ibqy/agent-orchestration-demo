@@ -5,6 +5,8 @@ package com.xb.agent.reasoning;
  *
  * 心得：三种模式本质都是"循环 + 终止条件"的差异，
  * 统一抽象后可以运行时切换
+ *
+ * @author ibqy
  */
 public interface ReasoningAgent {
 

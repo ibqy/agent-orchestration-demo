@@ -21,6 +21,8 @@ import java.util.Map;
  *
  * 心得: 编排是重 CPU/IO 任务，Controller 层包 Mono.fromCallable
  * 丢 boundedElastic 调度器，WebFlux 事件循环才不会被 LLM 阻塞调用拖死
+ *
+ * @author ibqy
  */
 @RestController
 @RequestMapping("/agent")
@@ -41,7 +43,11 @@ public class AgentController {
         this.entityMemory = entityMemory;
     }
 
-    /** 提交任务 */
+    /**
+     * 提交 Agent 任务（异步执行，立即返回 taskId）
+     * @param body 请求体，含 userId 和 goal
+     * @return 包含 taskId 和执行结果的 Mono
+     */
     @PostMapping("/tasks")
     public Mono<Map<String, String>> submit(@RequestBody Map<String, String> body) {
         String userId = body.getOrDefault("userId", "guest");
@@ -56,7 +62,11 @@ public class AgentController {
                 .map(result -> Map.of("taskId", extractId(result), "result", result));
     }
 
-    /** 查询任务快照 */
+    /**
+     * 查询任务快照（状态、步数、Token 用量等）
+     * @param id 任务ID
+     * @return 任务快照信息的 Mono
+     */
     @GetMapping("/tasks/{id}")
     public Mono<Map<String, Object>> query(@PathVariable String id) {
         var snapshot = taskService.query(id);
@@ -71,21 +81,32 @@ public class AgentController {
                 "steps", snapshot.getSteps().size()));
     }
 
-    /** 人工确认（HITL 恢复） */
+    /**
+     * 人工确认（HITL 恢复）: 将 WAIT_HUMAN 状态的任务恢复为 RUNNING
+     * @param id 任务ID
+     * @return 确认结果的 Mono
+     */
     @PostMapping("/tasks/{id}/confirm")
     public Mono<Map<String, Object>> confirm(@PathVariable String id) {
         boolean ok = taskService.confirm(id);
         return Mono.just(Map.of("taskId", id, "confirmed", ok));
     }
 
-    /** 人工终止 */
+    /**
+     * 人工终止: 将 WAIT_HUMAN 状态的任务标记为 FAILED
+     * @param id 任务ID
+     * @return 终止结果的 Mono
+     */
     @PostMapping("/tasks/{id}/abort")
     public Mono<Map<String, Object>> abort(@PathVariable String id) {
         boolean ok = taskService.abort(id);
         return Mono.just(Map.of("taskId", id, "aborted", ok));
     }
 
-    /** 工具清单（给前端/调试看） */
+    /**
+     * 查询已注册工具清单（供前端展示/调试）
+     * @return 工具列表及数量的 Mono
+     */
     @GetMapping("/tools")
     public Mono<Map<String, Object>> tools() {
         return Mono.just(Map.of(
@@ -99,20 +120,31 @@ public class AgentController {
                         .toList()));
     }
 
-    /** 运行指标 */
+    /**
+     * 查询 Agent 运行指标（任务数、工具调用数、HITL 次数等）
+     * @return 指标报告字符串的 Mono
+     */
     @GetMapping("/metrics")
     public Mono<Map<String, String>> metricsReport() {
         return Mono.just(Map.of("report", metrics.report()));
     }
 
-    /** 演示: 动态下线工具 */
+    /**
+     * 演示: 动态下线工具（模拟生产环境工具熔断/下线场景）
+     * @param name 工具名称
+     * @return 下线结果的 Mono
+     */
     @PostMapping("/tools/{name}/offline")
     public Mono<Map<String, Object>> offline(@PathVariable String name) {
         toolRegistry.unregister(name);
         return Mono.just(Map.of("tool", name, "status", "offline"));
     }
 
-    /** 演示: 写入实体记忆 */
+    /**
+     * 演示: 写入实体记忆（如用户偏好、订单ID等长期记忆）
+     * @param body 请求体，含 userId、type、value
+     * @return 保存结果的 Mono
+     */
     @PostMapping("/memory/entity")
     public Mono<Map<String, Object>> saveEntity(@RequestBody Map<String, String> body) {
         entityMemory.save(body.getOrDefault("userId", "guest"),

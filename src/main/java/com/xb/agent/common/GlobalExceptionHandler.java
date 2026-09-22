@@ -25,6 +25,8 @@ import java.util.UUID;
  *   <li>{@link IllegalArgumentException} — 参数校验失败</li>
  *   <li>未知异常 — 兜底处理，附带 requestId 便于排查</li>
  * </ul>
+ *
+ * @author ibqy
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {

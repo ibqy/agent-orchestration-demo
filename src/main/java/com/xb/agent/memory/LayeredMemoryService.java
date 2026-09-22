@@ -15,6 +15,8 @@ import java.util.List;
  *   ChatMemory/短时 = 本次对话上下文
  *   任务快照 = 任务执行进度
  *   长时记忆 = 用户长期知识库
+ *
+ * @author ibqy
  */
 @Service
 public class LayeredMemoryService {
@@ -34,7 +36,13 @@ public class LayeredMemoryService {
         this.compressor = compressor;
     }
 
-    /** 任务启动时构建记忆上下文 */
+    /**
+     * 任务启动时从三层记忆构建上下文
+     * @param sessionId 会话ID
+     * @param userId 用户ID
+     * @param goal 任务目标
+     * @return 合并后的上下文文本（注入 SystemPrompt）
+     */
     public String buildContext(String sessionId, String userId, String goal) {
         StringBuilder ctx = new StringBuilder();
 
@@ -58,7 +66,13 @@ public class LayeredMemoryService {
         return ctx.toString();
     }
 
-    /** 任务结束时抽取重要信息写长时记忆 */
+    /**
+     * 任务结束时抽取关键信息写入长时记忆和短时记忆
+     * @param sessionId 会话ID
+     * @param userId 用户ID
+     * @param goal 任务目标
+     * @param answer 任务回答
+     */
     public void onTaskFinished(String sessionId, String userId, String goal, String answer) {
         if (answer != null && answer.length() > 50) {
             longTerm.remember(userId, "任务[" + goal + "] 结论: " + abbreviate(answer));

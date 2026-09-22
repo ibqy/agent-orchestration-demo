@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
  *
  * 心得：日志里带上 traceId，出问题能一次捞全链路；
  * Span 粒度到"工具调用"级就够，再细存储成本爆炸
+ *
+ * @author ibqy
  */
 @Component
 public class AgentTraceLogger {
@@ -42,6 +44,11 @@ public class AgentTraceLogger {
         return span;
     }
 
+    /**
+     * 正常结束 Span，记录 observation
+     * @param span 当前 Span
+     * @param observation 工具返回的观察结果
+     */
     public void endSpan(Span span, String observation) {
         if (span == null) return;
         // observation 截断存储，全量走日志
@@ -51,6 +58,11 @@ public class AgentTraceLogger {
         span.end();
     }
 
+    /**
+     * 异常结束 Span，记录错误状态
+     * @param span 当前 Span
+     * @param e 导致失败的异常
+     */
     public void endSpanError(Span span, Exception e) {
         if (span == null) return;
         span.setStatus(StatusCode.ERROR, e.getMessage());

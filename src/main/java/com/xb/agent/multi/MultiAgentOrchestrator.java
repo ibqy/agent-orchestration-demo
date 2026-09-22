@@ -17,6 +17,8 @@ import java.util.concurrent.Executors;
  *
  * 心得1: 无依赖子任务并行跑（虚拟线程池），有依赖的等前置完成
  * 心得2: Reviewer 判 RETRY 时最多重试 2 次，防止评审和执行互相拉扯死循环
+ *
+ * @author ibqy
  */
 @Service
 public class MultiAgentOrchestrator {
@@ -37,6 +39,12 @@ public class MultiAgentOrchestrator {
         this.reviewer = reviewer;
     }
 
+    /**
+     * 执行多 Agent 编排主流程
+     * @param userGoal 用户目标描述
+     * @param toolInvoker 工具调用回调（含防护管道）
+     * @return 汇总后的执行结果文本
+     */
     public String run(String userGoal, ToolInvoker toolInvoker) {
         String taskId = UUID.randomUUID().toString().substring(0, 8);
         TaskPlan plan = planner.createPlan(taskId, userGoal);

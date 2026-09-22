@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
  * 心得1: 网络类错误重试，业务类错误不重试直接喂回 LLM
  * 心得2: 错误反馈必须是结构化文本，让 Agent 自己决策
  *   重试 / 改参数 / 终止 —— 这比硬编码错误处理灵活得多
+ *
+ * @author ibqy
  */
 @Component
 public class ToolExecutor {
@@ -26,8 +28,11 @@ public class ToolExecutor {
     }
 
     /**
-     * 执行工具（Agent 统一入口）
-     * @return 观察结果（含错误反馈）
+     * 执行工具（Agent 统一入口）：权限校验 → 调用 → 错误分类反馈
+     * @param userId 当前用户ID，用于权限校验
+     * @param toolName 工具名称
+     * @param argsJson LLM 输出的 JSON 参数
+     * @return 观察结果（含错误反馈，供 Agent 决策下一步）
      */
     @CircuitBreaker(name = "toolCircuitBreaker", fallbackMethod = "degraded")
     public String execute(String userId, String toolName, String argsJson) {

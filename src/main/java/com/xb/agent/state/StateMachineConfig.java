@@ -16,6 +16,8 @@ import java.util.EnumSet;
  * 心得：状态机最大价值是把"什么状态下允许做什么"显式化。
  * 以前用 if-else 判断状态，漏掉一个分支就出灵异 bug；
  * 状态机把非法流转直接在框架层拒绝掉
+ *
+ * @author ibqy
  */
 @Configuration
 @EnableStateMachineFactory

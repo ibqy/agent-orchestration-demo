@@ -3,7 +3,13 @@ package com.xb.agent.multi;
 import java.util.ArrayList;
 import java.util.List;
 
-/** 任务计划 —— Planner 输出，含全部子任务和依赖关系 */
+/**
+ * 任务计划 —— Planner 输出，含全部子任务和依赖关系
+ *
+ * <p>提供可运行任务查询和完成状态判断，驱动多 Agent 协作编排。</p>
+ *
+ * @author ibqy
+ */
 public class TaskPlan {
 
     private final String taskId;
@@ -15,11 +21,18 @@ public class TaskPlan {
         this.userGoal = userGoal;
     }
 
+    /**
+     * 添加一个子任务到计划中
+     * @param task 子任务
+     */
     public void addSubTask(SubTask task) {
         subTasks.add(task);
     }
 
-    /** 已完成子任务 id 列表 */
+    /**
+     * 获取已完成子任务的ID列表
+     * @return 已完成子任务ID列表
+     */
     public List<String> completedIds() {
         return subTasks.stream()
                 .filter(t -> t.getStatus() == SubTask.Status.DONE)
@@ -27,7 +40,10 @@ public class TaskPlan {
                 .toList();
     }
 
-    /** 当前可执行的子任务（依赖满足且未开始） */
+    /**
+     * 获取当前可执行的子任务（依赖已满足且未开始）
+     * @return 可立即执行的子任务列表
+     */
     public List<SubTask> runnableTasks() {
         List<String> completed = completedIds();
         return subTasks.stream()
@@ -36,6 +52,10 @@ public class TaskPlan {
                 .toList();
     }
 
+    /**
+     * 判断所有子任务是否已结束（完成或失败）
+     * @return true 表示无待执行任务
+     */
     public boolean allFinished() {
         return subTasks.stream().allMatch(t ->
                 t.getStatus() == SubTask.Status.DONE || t.getStatus() == SubTask.Status.FAILED);

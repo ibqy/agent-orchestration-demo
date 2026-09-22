@@ -12,6 +12,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * 心得：评估 Agent 好坏看这几个:
  *   任务完成率 / 平均耗时 / 工具失败率 / 不必要调用次数 / HITL 触发率
  * "不必要调用"= Agent 幻觉式调用不存在的工具，这个指标最能反映 prompt 质量
+ *
+ * @author ibqy
  */
 @Component
 public class AgentMetrics {
@@ -38,6 +40,10 @@ public class AgentMetrics {
     }
     public void hallucinatedTool() { hallucinatedToolCalls.incrementAndGet(); }
 
+    /**
+     * 生成可读的指标报告文本
+     * @return 格式化的指标汇总
+     */
     public String report() {
         long total = totalTasks.get();
         long calls = toolCalls.get();

@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
  *
  * 心得：ReAct 的关键不是循环本身，而是 Observation 要回填进上下文，
  * 否则模型不知道上一步发生了什么，会重复调用
+ *
+ * @author ibqy
  */
 public class ReActAgent implements ReasoningAgent {
 

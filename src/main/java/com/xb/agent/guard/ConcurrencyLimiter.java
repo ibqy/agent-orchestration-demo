@@ -10,6 +10,8 @@ import java.time.Duration;
  *
  * 心得：Redis increment + expire 做计数器，
  * 比信号量简单且天然跨实例（多 Pod 部署也要限得住）
+ *
+ * @author ibqy
  */
 @Component
 public class ConcurrencyLimiter {
@@ -22,7 +24,12 @@ public class ConcurrencyLimiter {
         this.redis = redis;
     }
 
-    /** 尝试占一个并发槽，成功 true */
+    /**
+     * 尝试获取一个并发槽位
+     * @param userId 用户ID
+     * @param max 最大并发数
+     * @return true 表示获取成功，false 表示已达上限
+     */
     public boolean tryAcquire(String userId, int max) {
         String key = KEY.formatted(userId);
         Long current = redis.opsForValue().increment(key);
@@ -34,6 +41,10 @@ public class ConcurrencyLimiter {
         return false;
     }
 
+    /**
+     * 释放并发槽位
+     * @param userId 用户ID
+     */
     public void release(String userId) {
         String key = KEY.formatted(userId);
         String currentStr = redis.opsForValue().get(key);

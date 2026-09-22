@@ -12,6 +12,8 @@ import java.util.List;
  *
  * 心得：压缩阈值要留提前量（如 70% 窗口就压），
  * 压缩本身也要消耗 token，等 100% 才压就来不及了
+ *
+ * @author ibqy
  */
 @Component
 public class MemoryCompressor {
@@ -35,11 +37,21 @@ public class MemoryCompressor {
         this.model = model;
     }
 
-    /** 粗估 token: 中文 ~1字/token，英文 ~0.75 词/token，取字符数的一半够用 */
+    /**
+     * 粗估消息列表的 token 总量
+     * @param messages 消息列表
+     * @return 估算的 token 数
+     */
     public int estimateTokens(List<String> messages) {
         return messages.stream().mapToInt(m -> m.length() / 2 + 1).sum();
     }
 
+    /**
+     * 超阈值时用 LLM 压缩对话历史
+     * @param messages 原始对话列表
+     * @param maxTokens token 上限
+     * @return 压缩后的消息列表（可能是摘要）
+     */
     public List<String> compressIfNeeded(List<String> messages, int maxTokens) {
         int current = estimateTokens(messages);
         if (current <= maxTokens * 7 / 10) {

@@ -1,6 +1,12 @@
 package com.xb.agent.state;
 
-/** Agent 任务状态枚举 —— FSM 节点 */
+/**
+ * Agent 任务状态枚举 —— FSM 节点
+ *
+ * <p>定义任务从初始化到成功/失败的完整生命周期状态。</p>
+ *
+ * @author ibqy
+ */
 public enum AgentState {
     INIT("初始化"),
     PLANNING("生成计划中"),

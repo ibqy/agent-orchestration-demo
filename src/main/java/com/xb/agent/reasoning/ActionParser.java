@@ -5,11 +5,18 @@ package com.xb.agent.reasoning;
  *
  * 心得：别指望 LLM 永远按格式输出，
  * 解析器必须容错：找不到 ACTION 关键字时整段当作 THOUGHT
+ *
+ * @author ibqy
  */
 public final class ActionParser {
 
     private ActionParser() {}
 
+    /**
+     * 从 LLM 自由文本中解析出 ACTION 或 ANSWER
+     * @param llmOutput LLM 原始输出
+     * @return 结构化 AgentAction（工具调用/最终回答/重试）
+     */
     public static AgentAction parse(String llmOutput) {
         boolean hasAnswer = llmOutput.contains("ANSWER:");
         boolean hasAction = llmOutput.contains("ACTION:");

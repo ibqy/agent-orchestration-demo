@@ -15,6 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * 心得：长时记忆写入时机选"任务完成时抽取"而不是每轮对话都写，
  * 否则库很快被琐碎内容灌满，召回质量下降
+ *
+ * @author ibqy
  */
 @Repository
 public class LongTermMemory {
@@ -28,7 +30,11 @@ public class LongTermMemory {
     private final Map<String, List<MemoryItem>> store = new ConcurrentHashMap<>();
     private final Map<String, float[]> vectors = new ConcurrentHashMap<>();
 
-    /** 写入长时记忆 */
+    /**
+     * 写入一条长时记忆
+     * @param userId 用户ID
+     * @param content 记忆内容
+     */
     public void remember(String userId, String content) {
         String id = UUID.randomUUID().toString().substring(0, 8);
         MemoryItem item = new MemoryItem(id, userId, content, System.currentTimeMillis());
@@ -36,7 +42,13 @@ public class LongTermMemory {
         log.info("[LongTerm] 用户 {} 写入记忆 {}", userId, id);
     }
 
-    /** 检索用户相关记忆 */
+    /**
+     * 根据查询检索用户相关记忆
+     * @param userId 用户ID
+     * @param query 查询文本
+     * @param topK 返回最大条数
+     * @return 匹配的记忆列表
+     */
     public List<MemoryItem> recall(String userId, String query, int topK) {
         List<MemoryItem> items = store.getOrDefault(userId, List.of());
         if (items.isEmpty()) return List.of();

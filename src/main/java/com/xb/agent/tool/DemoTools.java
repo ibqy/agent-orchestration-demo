@@ -14,6 +14,8 @@ import java.util.concurrent.ThreadLocalRandom;
  *
  * 心得：工具本身逻辑越简单越好（演示架构），
  * 复杂度应该都在注册/权限/熔断这些横切关注点上
+ *
+ * @author ibqy
  */
 @Component
 public class DemoTools implements SmartInitializingSingleton {

@@ -11,6 +11,8 @@ import java.util.List;
  *
  * 心得：ChatMemory 只管本次对话上下文，和长时记忆是两个东西；
  * 会话过期交给 Redis TTL，不自己写清理任务
+ *
+ * @author ibqy
  */
 @Repository
 public class ShortTermMemory {
@@ -24,6 +26,12 @@ public class ShortTermMemory {
         this.redis = redis;
     }
 
+    /**
+     * 追加一条对话记录
+     * @param sessionId 会话ID
+     * @param role 角色（user/assistant）
+     * @param content 消息内容
+     */
     public void append(String sessionId, String role, String content) {
         String entry = role + ":" + content;
         redis.opsForList().rightPush(KEY.formatted(sessionId), entry);
@@ -37,6 +45,10 @@ public class ShortTermMemory {
         return all.size() <= n ? all : all.subList(all.size() - n, all.size());
     }
 
+    /**
+     * 清空指定会话的全部记忆
+     * @param sessionId 会话ID
+     */
     public void clear(String sessionId) {
         redis.delete(KEY.formatted(sessionId));
     }

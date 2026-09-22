@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
  *
  * 心得：评审结论要结构化（PASS/RETRY/ABORT），
  * 别让 Reviewer 输出一大段文字再靠人解读
+ *
+ * @author ibqy
  */
 @Component
 public class ReviewerAgent {
@@ -39,6 +41,11 @@ public class ReviewerAgent {
         this.model = model;
     }
 
+    /**
+     * 让 LLM 评审子任务执行结果，返回结构化结论
+     * @param task 待评审的子任务
+     * @return PASS/RETRY/ABORT 三选一
+     */
     public Verdict review(SubTask task) {
         String output = model.chat(
                 REVIEW_PROMPT.formatted(task.getGoal(), task.getResult())).trim().toUpperCase();

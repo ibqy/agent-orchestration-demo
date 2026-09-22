@@ -34,6 +34,8 @@ import java.util.UUID;
  * 工具调用管道（guardedInvoker）是关键设计:
  * LoopBreaker → HITL检查 → Trace Span → 权限/熔断执行 → Token记账
  * 每一环独立，谁出问题都不影响其他环
+ *
+ * @author ibqy
  */
 @Service
 public class AgentTaskService {
@@ -79,7 +81,12 @@ public class AgentTaskService {
         this.trace = trace;
     }
 
-    /** 提交任务: 全链路入口 */
+    /**
+     * 提交任务: 全链路入口（并发限制 → 记忆上下文 → FSM → 多Agent执行 → 状态收尾）
+     * @param userId 用户ID
+     * @param goal 用户目标描述
+     * @return 执行结果文本（含 taskId）
+     */
     public String submitTask(String userId, String goal) {
         // 1. 并发限制
         if (!concurrencyLimiter.tryAcquire(userId, guardProps.getMaxConcurrentPerUser())) {
@@ -175,12 +182,20 @@ public class AgentTaskService {
         return resumed == AgentState.RUNNING;
     }
 
-    /** 人工终止: WAIT_HUMAN → FAILED */
+    /**
+     * 人工终止: 触发 HUMAN_ABORT 事件，将 WAIT_HUMAN 状态的任务标记为 FAILED
+     * @param taskId 任务ID
+     * @return true 表示成功触发终止事件
+     */
     public boolean abort(String taskId) {
         return taskRunner.fireEvent(taskId, AgentEvent.HUMAN_ABORT);
     }
 
-    /** 断点续跑: 读快照返回当前状态 */
+    /**
+     * 断点续跑: 读取快照返回任务当前状态（用于前端轮询/恢复）
+     * @param taskId 任务ID
+     * @return 任务快照，不存在返回 null
+     */
     public TaskSnapshot query(String taskId) {
         return snapshotStore.load(taskId);
     }

@@ -7,6 +7,8 @@ package com.xb.agent.common;
  *
  * <p><b>教学知识点</b>：REST 接口统一返回格式，让前端/调用方可以用固定结构解析响应。
  * 使用 Java 21 record 实现不可变数据载体。</p>
+ *
+ * @author ibqy
  */
 public record ApiResponse<T>(int code, String message, T data) {
 

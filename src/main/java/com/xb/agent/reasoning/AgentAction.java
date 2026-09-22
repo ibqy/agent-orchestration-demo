@@ -4,6 +4,8 @@ package com.xb.agent.reasoning;
  * 一次推理步骤的结构化结果
  *
  * LLM 输出解析成: thought / 工具调用 / 最终回答 三选一
+ *
+ * @author ibqy
  */
 public class AgentAction {
     private final String thought;      // 本步思考
@@ -21,14 +23,17 @@ public class AgentAction {
         this.needRetry = needRetry;
     }
 
+    /** 创建工具调用动作 */
     public static AgentAction ofTool(String thought, String toolName, String toolArgs) {
         return new AgentAction(thought, toolName, toolArgs, null, false);
     }
 
+    /** 创建最终回答动作 */
     public static AgentAction ofAnswer(String thought, String answer) {
         return new AgentAction(thought, null, null, answer, false);
     }
 
+    /** 创建格式重试动作（LLM 输出无法解析时） */
     public static AgentAction ofRetry(String thought) {
         return new AgentAction(thought, null, null, null, true);
     }

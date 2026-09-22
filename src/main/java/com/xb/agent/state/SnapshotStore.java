@@ -13,6 +13,8 @@ import java.time.Duration;
  *
  * 心得1: 每次状态变更都 save，别攒批 —— 服务随时可能挂
  * 心得2: TTL 给 7 天，任务快照不是永久数据，过期自动清理省内存
+ *
+ * @author ibqy
  */
 @Repository
 public class SnapshotStore {
@@ -28,6 +30,10 @@ public class SnapshotStore {
         this.redis = redis;
     }
 
+    /**
+     * 保存快照到 Redis（每次状态变更都应调用）
+     * @param snapshot 任务快照
+     */
     public void save(TaskSnapshot snapshot) {
         try {
             String json = mapper.writeValueAsString(snapshot);
@@ -51,6 +57,10 @@ public class SnapshotStore {
         }
     }
 
+    /**
+     * 删除指定任务的快照
+     * @param taskId 任务ID
+     */
     public void delete(String taskId) {
         redis.delete(KEY_PREFIX + taskId);
     }

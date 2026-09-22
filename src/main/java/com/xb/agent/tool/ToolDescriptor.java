@@ -5,6 +5,8 @@ package com.xb.agent.tool;
  *
  * 心得：JSON Schema 不用自己手写，从参数反推生成。
  * 版本字段必须有，工具改了签名旧任务回放会炸
+ *
+ * @author ibqy
  */
 public class ToolDescriptor {
 

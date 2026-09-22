@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Configuration;
  *
  * 心得: 生产接 OTel Collector + AutoConfigure，
  * 这里手动提供 bean 保证依赖注入能跑通
+ *
+ * @author ibqy
  */
 @Configuration
 public class ObservabilityConfig {

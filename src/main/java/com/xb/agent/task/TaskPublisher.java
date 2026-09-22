@@ -9,6 +9,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * 任务发布器 —— 管理异步任务队列
+ *
+ * @author ibqy
  */
 @Component
 public class TaskPublisher {
@@ -33,10 +35,18 @@ public class TaskPublisher {
         log.info("[TaskPublisher] 任务重新入队 id={} retryCount={}", task.getId(), task.getRetryCount());
     }
 
+    /**
+     * 取出队首任务（非阻塞）
+     * @return 队首任务，队列为空返回 null
+     */
     public AsyncTask poll() {
         return queue.poll();
     }
 
+    /**
+     * 当前队列中待处理任务数量
+     * @return 队列长度
+     */
     public int size() {
         return queue.size();
     }

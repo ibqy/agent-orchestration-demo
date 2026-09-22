@@ -4,6 +4,8 @@ import java.util.UUID;
 
 /**
  * 异步任务 —— 队列执行模型
+ *
+ * @author ibqy
  */
 public class AsyncTask {
 
@@ -41,6 +43,7 @@ public class AsyncTask {
     public void setRetryCount(int retryCount) { this.retryCount = retryCount; }
     public void setStatus(TaskStatus status) { this.status = status; }
 
+    /** 重试次数 +1（用于判断是否超过最大重试次数） */
     public void incrementRetryCount() {
         this.retryCount++;
     }

@@ -13,6 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * 心得：注册中心的核心是把"工具发现"和"工具执行"分开，
  * LLM 只看描述符清单，执行时才绑定具体实现
+ *
+ * @author ibqy
  */
 @Component
 public class ToolRegistry {
@@ -21,6 +23,10 @@ public class ToolRegistry {
 
     private final Map<String, AgentTool> tools = new ConcurrentHashMap<>();
 
+    /**
+     * 注册工具到注册中心
+     * @param tool 待注册的工具
+     */
     public void register(AgentTool tool) {
         tools.put(tool.descriptor().getName(), tool);
         log.info("[Registry] 注册工具 {} v{}", tool.descriptor().getName(), tool.descriptor().getVersion());
@@ -32,10 +38,19 @@ public class ToolRegistry {
         log.info("[Registry] 下线工具 {} {}", name, removed != null ? "成功" : "(不存在)");
     }
 
+    /**
+     * 按名称获取已注册工具
+     * @param name 工具名称
+     * @return 工具实例，不存在返回 null
+     */
     public AgentTool get(String name) {
         return tools.get(name);
     }
 
+    /**
+     * 列出所有已注册工具的描述符
+     * @return 工具描述符列表
+     */
     public List<ToolDescriptor> listAll() {
         return tools.values().stream().map(AgentTool::descriptor).toList();
     }

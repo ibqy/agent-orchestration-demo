@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
  *
  * 心得：让 LLM 输出带编号+依赖的行式格式，比直接要求 JSON 稳得多，
  * 解析容错写 10 行就够
+ *
+ * @author ibqy
  */
 @Component
 public class PlannerAgent {
@@ -37,6 +39,12 @@ public class PlannerAgent {
         this.model = model;
     }
 
+    /**
+     * 调用 LLM 将用户需求拆解为带依赖关系的子任务计划
+     * @param taskId 任务ID
+     * @param userGoal 用户需求原文
+     * @return 解析后的 TaskPlan 对象
+     */
     public TaskPlan createPlan(String taskId, String userGoal) {
         TaskPlan plan = new TaskPlan(taskId, userGoal);
         String output = model.chat(PLAN_PROMPT.formatted(userGoal));

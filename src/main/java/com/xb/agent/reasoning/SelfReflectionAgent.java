@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
  *
  * 心得：反思用独立 prompt 而不是塞在主 prompt 里，
  * 分开后反思标准可以单独迭代，主流程不受污染
+ *
+ * @author ibqy
  */
 public class SelfReflectionAgent implements ReasoningAgent {
 

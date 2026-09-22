@@ -3,7 +3,13 @@ package com.xb.agent.multi;
 import java.util.ArrayList;
 import java.util.List;
 
-/** 子任务 —— Planner 拆解产物，Worker 执行单元 */
+/**
+ * 子任务 —— Planner 拆解产物，Worker 执行单元
+ *
+ * <p>每个子任务有独立的依赖关系和状态流转，支持重试。</p>
+ *
+ * @author ibqy
+ */
 public class SubTask {
 
     /** 状态: 待执行 / 执行中 / 完成 / 失败 / 待重试 */
@@ -21,6 +27,11 @@ public class SubTask {
         this.goal = goal;
     }
 
+    /**
+     * 判断依赖是否全部完成
+     * @param completedIds 已完成的子任务ID列表
+     * @return true 表示可执行
+     */
     public boolean readyToRun(List<String> completedIds) {
         return completedIds.containsAll(dependsOn);
     }

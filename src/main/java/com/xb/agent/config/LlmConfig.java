@@ -14,6 +14,8 @@ import java.time.Duration;
  * 心得：没引 langchain4j-spring-boot-starter 就没有自动配置，
  * Planner/Worker/Reviewer/MemoryCompressor 全都注入 ChatModel，
  * 这一个 Bean 是全项目的供电站
+ *
+ * @author ibqy
  */
 @Configuration
 public class LlmConfig {

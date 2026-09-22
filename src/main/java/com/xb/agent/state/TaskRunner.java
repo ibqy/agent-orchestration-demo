@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
  *
  * 心得：Spring Statemachine 本身是内存态，
  * 每次事件后必须手动同步快照，否则重启状态就丢
+ *
+ * @author ibqy
  */
 @Service
 public class TaskRunner {

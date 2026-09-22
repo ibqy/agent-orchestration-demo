@@ -8,6 +8,8 @@ import java.util.List;
  *
  * 心得：快照字段 = 恢复执行所需的全部信息。
  * 落一个字段，重启后就恢复不回来，设计时按"重启后我要知道什么"反推
+ *
+ * @author ibqy
  */
 public class TaskSnapshot {
 
@@ -38,11 +40,19 @@ public class TaskSnapshot {
         this.updatedAt = System.currentTimeMillis();
     }
 
+    /**
+     * 追加一条执行步骤记录
+     * @param step 步骤记录
+     */
     public void addStep(StepRecord step) {
         steps.add(step);
         this.updatedAt = System.currentTimeMillis();
     }
 
+    /**
+     * 累加 token 消耗
+     * @param n 本次消耗的 token 数
+     */
     public void addToken(long n) { tokenUsed += n; }
 
     // getter / setter

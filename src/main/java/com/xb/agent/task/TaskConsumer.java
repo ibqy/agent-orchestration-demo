@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * 任务消费者 —— 从队列取任务并执行
+ *
+ * @author ibqy
  */
 @Component
 public class TaskConsumer {
@@ -18,7 +20,10 @@ public class TaskConsumer {
         this.publisher = publisher;
     }
 
-    /** 消费单个任务 */
+    /**
+     * 消费单个任务: 状态置为 RUNNING → 执行 → 成功/重试/死信
+     * @param task 待执行的异步任务
+     */
     public void consume(AsyncTask task) {
         try {
             task.setStatus(AsyncTask.TaskStatus.RUNNING);

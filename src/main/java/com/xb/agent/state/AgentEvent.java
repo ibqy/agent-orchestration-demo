@@ -1,6 +1,12 @@
 package com.xb.agent.state;
 
-/** FSM 事件 —— 状态流转触发器 */
+/**
+ * FSM 事件枚举 —— 状态流转触发器
+ *
+ * <p>驱动 Agent 任务状态机在 INIT→PLANNING→RUNNING→REVIEW→SUCCESS/FAILED 之间转换。</p>
+ *
+ * @author ibqy
+ */
 public enum AgentEvent {
     START,           // 任务启动: INIT → PLANNING
     PLAN_DONE,       // 规划完成: PLANNING → RUNNING

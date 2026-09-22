@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
  *
  * 心得：初始规划容易"想当然"，所以每步执行完要校验，
  * 偏差时把偏差信息喂回 LLM 做计划修正（Re-Plan）
+ *
+ * @author ibqy
  */
 public class PlanAndSolveAgent implements ReasoningAgent {
 

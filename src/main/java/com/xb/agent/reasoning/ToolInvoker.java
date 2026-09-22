@@ -5,6 +5,8 @@ package com.xb.agent.reasoning;
  *
  * 心得：reasoning 层不该依赖 tool 层细节，
  * 否则每种推理模式都要重复写工具分发逻辑
+ *
+ * @author ibqy
  */
 @FunctionalInterface
 public interface ToolInvoker {

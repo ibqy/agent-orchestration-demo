@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
  *
  * 心得：Worker 里直接复用 ReActAgent，不要另写一套循环 ——
  * 多 Agent 的价值是"角色分工"，不是每个角色都要发明新推理逻辑
+ *
+ * @author ibqy
  */
 @Component
 public class WorkerAgent {
@@ -24,6 +26,12 @@ public class WorkerAgent {
         this.model = model;
     }
 
+    /**
+     * 用 ReAct 循环执行单个子任务
+     * @param task 待执行子任务
+     * @param toolInvoker 工具调用回调
+     * @return 执行结果文本
+     */
     public String execute(SubTask task, ToolInvoker toolInvoker) {
         log.info("[Worker] 开始子任务 {}: {}", task.getId(), task.getGoal());
         task.setStatus(SubTask.Status.RUNNING);

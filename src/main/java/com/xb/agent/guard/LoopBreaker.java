@@ -12,6 +12,8 @@ import java.util.List;
  * 心得：只数"总调用次数"不够，还要检测"重复参数"——
  * 同一工具+同一参数连续出现 3 次基本就是死循环，
  * 让 LLM 换参数比重试更有效
+ *
+ * @author ibqy
  */
 @Component
 public class LoopBreaker {
@@ -26,7 +28,14 @@ public class LoopBreaker {
         this.redis = redis;
     }
 
-    /** 计数 + 死循环检测，返回错误提示或 null */
+    /**
+     * 检查工具调用是否触发熔断（次数超限或死循环）
+     * @param taskId 任务ID
+     * @param toolName 工具名
+     * @param argsJson 参数 JSON
+     * @param maxCalls 最大调用次数
+     * @return 触发熔断返回错误提示，否则返回 null
+     */
     public String check(String taskId, String toolName, String argsJson, int maxCalls) {
         String callKey = CALL_KEY.formatted(taskId);
         Long calls = redis.opsForValue().increment(callKey);
