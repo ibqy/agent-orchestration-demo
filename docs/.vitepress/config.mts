@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   lang: 'zh-CN',
   title: '复杂 Agent 编排实战',
-  description: '生产级 Agent 系统教学：推理模式、多 Agent 架构、状态机持久化、分层记忆、工具体系、熔断防护',
+  description: '生产级 Agent 系统教学：推理模式、多 Agent 架构、状态机持久化、分层记忆、工具体系、熔断防护、MCP、A2A',
   base: '/agent-orchestration-demo/',
   lastUpdated: true,
   markdown: {
@@ -37,7 +37,8 @@ export default defineConfig({
           { text: '04 · 分层记忆', link: '/04-分层记忆总结' },
           { text: '05 · 工具体系', link: '/05-工具体系总结' },
           { text: '06 · 防护与可观测', link: '/06-防护与可观测总结' },
-          { text: '07 · 踩坑与面试', link: '/07-踩坑与面试总结' }
+          { text: '07 · 踩坑与面试', link: '/07-踩坑与面试总结' },
+          { text: '08 · MCP 与 A2A', link: '/08-mcp-a2a-integration' }
         ]
       }
     ],

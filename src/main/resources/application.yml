@@ -55,6 +55,14 @@ resilience4j:
         failure-rate-threshold: 50
         wait-duration-in-open-state: 10s
 
+# ======== MCP 客户端（默认关闭，需要 Node.js 环境） ========
+mcp:
+  enabled: ${MCP_ENABLED:false}
+
+# ======== A2A 服务（默认关闭） ========
+a2a:
+  enabled: ${A2A_ENABLED:false}
+
 # ======== 日志 ========
 logging:
   level:

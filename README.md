@@ -14,7 +14,7 @@
 
 ## 技术栈
 
-Java 21 + SpringBoot 3.4 + WebFlux + LangChain4j 1.0.0 + Spring Statemachine 4.0 + Redis + Milvus + Kafka + Resilience4j + OpenTelemetry
+Java 21 + SpringBoot 3.4 + WebFlux + LangChain4j 1.0.0 + Spring Statemachine 4.0 + Redis + Milvus + Kafka + Resilience4j + OpenTelemetry + MCP + A2A
 
 ## 模块地图
 
@@ -28,6 +28,8 @@ Java 21 + SpringBoot 3.4 + WebFlux + LangChain4j 1.0.0 + Spring Statemachine 4.0
 | 防护 | [guard/](src/main/java/com/xb/agent/guard/) | 死循环熔断/token预算/并发 | [06-防护与可观测](docs/06-防护与可观测总结.md) |
 | 可观测 | [observe/](src/main/java/com/xb/agent/observe/) | OTel Span + 指标 | 同上 |
 | 编排入口 | [controller/](src/main/java/com/xb/agent/controller/) | 全链路串联 + REST | [07-踩坑与面试](docs/07-踩坑与面试总结.md) |
+| MCP 集成 | [mcp/](src/main/java/com/xb/agent/mcp/) | MCP 协议接入外部工具服务 | [08-MCP与A2A](docs/08-mcp-a2a-integration.md) |
+| A2A 通信 | [a2a/](src/main/java/com/xb/agent/a2a/) | A2A 协议跨框架 Agent 协作 | 同上 |
 
 ## 全链路
 
@@ -89,6 +91,8 @@ mvn test
 - ✅ 防护机制（并发限制/循环熔断/Token 预算）
 - ✅ OpenTelemetry 可观测（Span + Metrics）
 - ✅ REST API + 全链路串联
+- ✅ MCP 协议集成（LangChain4j MCP 客户端，stdio 传输）
+- ✅ A2A 智能体通信（AgentCard 发现 + 远程调用）
 - ✅ 35 个单元测试
 
 **教学简化（生产需补充）：**

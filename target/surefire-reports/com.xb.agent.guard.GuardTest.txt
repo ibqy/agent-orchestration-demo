@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.xb.agent.guard.GuardTest
--------------------------------------------------------------------------------
-Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.210 s -- in com.xb.agent.guard.GuardTest
