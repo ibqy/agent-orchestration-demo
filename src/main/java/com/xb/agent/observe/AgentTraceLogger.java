@@ -2,9 +2,8 @@ package com.xb.agent.observe;
 
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
-import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.api.trace.StatusCode;
-import jakarta.annotation.PostConstruct;
+import io.opentelemetry.api.trace.Tracer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -27,10 +26,9 @@ public class AgentTraceLogger {
 
     public AgentTraceLogger(OpenTelemetry otel) {
         this.otel = otel;
-    }
-
-    @PostConstruct
-    void init() {
+        // 构造器里直接取 Tracer：@PostConstruct 方案在脱离 Spring 容器的场景
+        // （单元测试、手工装配）下 tracer 会是 null，一调用 spanBuilder 就 NPE。
+        // 依赖字段的初始化不要交给生命周期回调
         this.tracer = otel.getTracer("agent-orchestration");
     }
 

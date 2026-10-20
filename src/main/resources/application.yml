@@ -38,7 +38,14 @@ agent:
     token-budget: 100000        # 单任务 token 预算
     max-concurrent-per-user: 3  # 单用户并发任务上限
   hitl:
-    high-risk-tools: dropTable,deleteOrder,refund  # 高危工具触发人工介入
+    high-risk-tools: dropTable,deleteOrder,refund  # 高危工具触发人工介入（与 risk=HIGH 并用）
+    approval-timeout-minutes: 10                   # 审批等待超时，超时按拒绝处理
+  reasoning:
+    # 默认推理模式: REACT(开放问题) / PLAN_AND_SOLVE(流程化任务) / SELF_REFLECTION(准确性敏感)
+    # 提交任务时可用 body {"mode": "PLAN_AND_SOLVE"} 覆盖
+    mode: REACT
+    max-steps: 5               # ReAct / Plan-and-Solve 最大步数
+    max-reflection-retries: 2  # Self-Reflection 最大自检重试次数
 
 # ======== Resilience4j ========
 resilience4j:

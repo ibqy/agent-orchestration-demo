@@ -38,7 +38,8 @@ export default defineConfig({
           { text: '05 · 工具体系', link: '/05-工具体系总结' },
           { text: '06 · 防护与可观测', link: '/06-防护与可观测总结' },
           { text: '07 · 踩坑与面试', link: '/07-踩坑与面试总结' },
-          { text: '08 · MCP 与 A2A', link: '/08-mcp-a2a-integration' }
+          { text: '08 · MCP 与 A2A', link: '/08-mcp-a2a-integration' },
+          { text: '09 · 流式、HITL 与可观测', link: '/09-流式与HITL与可观测' }
         ]
       }
     ],

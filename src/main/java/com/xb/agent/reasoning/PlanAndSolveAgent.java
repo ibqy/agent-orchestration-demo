@@ -35,10 +35,19 @@ public class PlanAndSolveAgent implements ReasoningAgent {
 
     private final ChatModel model;
     private final ToolInvoker toolInvoker;
+    private final StepListener listener;
 
     public PlanAndSolveAgent(ChatModel model, ToolInvoker toolInvoker) {
+        this(model, toolInvoker, StepListener.noop());
+    }
+
+    /**
+     * @param listener 步骤监听器：推送 PLAN / STEP / REPLAN / ANSWER 事件（SSE 推送用）
+     */
+    public PlanAndSolveAgent(ChatModel model, ToolInvoker toolInvoker, StepListener listener) {
         this.model = model;
         this.toolInvoker = toolInvoker;
+        this.listener = listener != null ? listener : StepListener.noop();
     }
 
     @Override
@@ -50,6 +59,7 @@ public class PlanAndSolveAgent implements ReasoningAgent {
                 .map(l -> l.replaceFirst("^\\s*\\d+\\.\\s*", ""))
                 .toArray(String[]::new);
         log.info("[P&S] 初始计划 {} 步", plan.length);
+        listener.onStep("PLAN", plan.length + " 步: " + String.join(" | ", plan));
 
         StringBuilder done = new StringBuilder();
         String[] current = plan;
@@ -58,11 +68,16 @@ public class PlanAndSolveAgent implements ReasoningAgent {
         for (int i = 0; i < current.length; i++) {
             String step = current[i];
             log.info("[P&S] 执行 {}/{}: {}", i + 1, current.length, step);
+            listener.onStep("STEP", (i + 1) + "/" + current.length + " " +
+                    StepListener.abbreviate(step, 200));
 
             // 让 LLM 决定本步是工具调用还是纯推理
             AgentAction action = ActionParser.parse(model.chat(stepPrompt(step)));
             if (action.isToolCall()) {
+                listener.onStep("ACTION", action.getToolName() + " " +
+                        StepListener.abbreviate(action.getToolArgs(), 200));
                 String obs = toolInvoker.invoke(action.getToolName(), action.getToolArgs());
+                listener.onStep("OBSERVATION", StepListener.abbreviate(obs, 300));
                 done.append("步骤").append(i + 1).append(": ").append(step)
                     .append(" → ").append(obs).append('\n');
             } else {
@@ -80,12 +95,15 @@ public class PlanAndSolveAgent implements ReasoningAgent {
                             .map(l -> l.replaceFirst("^\\s*\\d+\\.\\s*", ""))
                             .toArray(String[]::new);
                     log.info("[P&S] 计划修正为 {} 步", current.length);
+                    listener.onStep("REPLAN", "计划修正为 " + current.length + " 步");
                 }
             }
         }
 
         // 4. 汇总
-        return model.chat("根据以下执行记录总结任务结果:\n" + done);
+        String summary = model.chat("根据以下执行记录总结任务结果:\n" + done);
+        listener.onStep("ANSWER", StepListener.abbreviate(summary, 300));
+        return summary;
     }
 
     private String stepPrompt(String step) {
