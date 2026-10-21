@@ -1,3 +1,18 @@
+<p align="center">
+  <a href="https://ibqy.github.io/agent-orchestration-demo/"><img src="https://img.shields.io/badge/在线课件-2F6FEB?style=flat-square" alt="在线课件"></a>
+  <img src="https://img.shields.io/badge/Java-21-2266EE?style=flat-square" alt="Java 21">
+  <img src="https://img.shields.io/badge/Spring_Boot-3.5.16-6DB33F?style=flat-square" alt="Spring Boot 3.5.16">
+  <img src="https://img.shields.io/badge/LangChain4j-1.22.0-6DB33F?style=flat-square" alt="LangChain4j 1.22.0">
+  <img src="https://img.shields.io/badge/测试-65_个-3FB950?style=flat-square" alt="65 个测试">
+  <img src="https://img.shields.io/github/license/ibqy/agent-orchestration-demo?style=flat-square" alt="License">
+  <img src="https://img.shields.io/github/stars/ibqy/agent-orchestration-demo?style=flat-square" alt="Stars">
+</p>
+
+> **课程位置** 阶段 3 · 图编排与可恢复工作流 — 第 3 站（阶段验收）
+> [上一站 LangGraph4j](https://ibqy.github.io/langgraph4j-teaching-demo/) → **复杂 Agent 编排** → [下一站 RAG 高阶](https://ibqy.github.io/rag-hybrid-search-demo/) ｜ [完整学习路线](https://ibqy.github.io/curriculum)
+
+---
+
 # 复杂 Agent 编排 —— 学习总结
 
 > 从"单次 ToolCall + 内存对话"进阶到"长任务、多角色、可中断恢复、可自检"的 Agent 系统。
